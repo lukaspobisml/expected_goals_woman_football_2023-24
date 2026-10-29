@@ -51,7 +51,7 @@ scatter = ax.scatter(
     linewidth=1.4
 )
 
-# Reference lines in English
+# Reference lines
 ax.axvline(mean_xg, color='#7f8c8d', linewidth=1.1, linestyle='--', label=f'Average xG/90 ({mean_xg:.2f})')
 ax.axhline(mean_goals, color='#7f8c8d', linewidth=1.1, linestyle='--', label=f'Average Goals/90 ({mean_goals:.2f})')
 
