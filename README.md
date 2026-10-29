@@ -63,10 +63,7 @@ Relying exclusively on raw goal tallies introduces selection bias driven by team
 
 ```text
 ├── data/
-│   ├── clean_match_events_lean.csv    # Filtered match events
 │   ├── forward_scouting_summary.csv   # Aggregated center forward metrics
-│   ├── match_events.csv               # Raw event dump
-│   ├── matches_data.csv               # Match metadata
 │   └── player_total_minutes.csv       # Pre-computed playing time cache
 ├── results/
 │   ├── best_xg_performers.png         # Finishing efficiency bar chart (G - xG)
@@ -76,8 +73,6 @@ Relying exclusively on raw goal tallies introduces selection bias driven by team
 │   ├── best_xG_performers.py          # Script generating G - xG bar chart
 │   ├── build_forward_summary.py       # Aggregation pipeline script
 │   ├── calculate_minutes.py           # Playing time extraction runner
-│   ├── datadownload.py                # Raw data ingestion utility
-│   ├── dataprocessingagent.py         # Data processing helper
 │   ├── goals_vs_xG_per90.py           # Script generating per-90 scatter plot
 │   ├── goals_vs_xG.py                 # Script generating total volume scatter plot
 │   └── player_minutes.py              # Minute calculation module
