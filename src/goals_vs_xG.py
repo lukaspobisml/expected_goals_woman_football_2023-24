@@ -18,8 +18,8 @@ filtered_df = df[
     (df['total_shots'] >= 30)
 ].copy()
 
-mean_xg = filtered_df['total_xg'].mean()
-mean_goals = filtered_df['total_goals'].mean()
+mid_xg = (filtered_df['total_xg'].min() + filtered_df['total_xg'].max()) / 2
+mid_goals = (filtered_df['total_goals'].min() + filtered_df['total_goals'].max()) / 2
 
 fig, ax = plt.subplots(figsize=(12, 9), facecolor='#f4f4f4')
 ax.set_facecolor('#f4f4f4')
@@ -34,28 +34,22 @@ scatter = ax.scatter(
     linewidth=1.5
 )
 
-ax.axvline(mean_xg, color='gray', linewidth=1, linestyle='--')
-ax.axhline(mean_goals, color='gray', linewidth=1, linestyle='--')
+ax.axvline(mid_xg, color='gray', linewidth=1, linestyle='--')
+ax.axhline(mid_goals, color='gray', linewidth=1, linestyle='--')
 
 # Selective label placement
 texts = []
 for _, row in filtered_df.iterrows():
-    is_notable = (
-        row['total_xg'] > mean_xg or 
-        row['total_goals'] > mean_goals or 
-        row['total_goals'] >= 8
-    )
-    if is_notable:
-        texts.append(
-            ax.text(
-                row['total_xg'],
-                row['total_goals'],
-                row['player'],
-                fontsize=9,
-                fontweight='bold',
-                color='#222222'
-            )
+    texts.append(
+        ax.text(
+            row['total_xg'],
+            row['total_goals'],
+            row['player'],
+            fontsize=9,
+            fontweight='bold',
+            color='#222222'
         )
+    )    
 
 if HAS_ADJUST_TEXT and texts:
     adjust_text(

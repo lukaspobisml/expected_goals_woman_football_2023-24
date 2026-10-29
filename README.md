@@ -1,57 +1,61 @@
 # Women's Football Scouting: Advanced Finishing & xG Analysis
 
-An end-to-end data scouting project analyzing attacking performance and finishing efficiency for **Center Forwards** across women's football competitions using the StatsBomb event data format.
+An end-to-end data scouting repository analyzing attacking output, chance quality, and finishing efficiency for **Center Forwards** across women's football competitions using the StatsBomb open event data framework.
 
 ---
 
 ## 📌 Project Overview & Objectives
 
-Traditional goal totals often misrepresent pure attacking ability due to team quality, variance, and small-sample luck. This project separates finishing luck from chance creation by analyzing:
-- **Expected Goals (xG) vs. Actual Goals**: Quantifying raw volume against conversion quality.
-- **Finishing Efficiency ($G - xG$)**: Identifying clinical finishers versus underperforming strikers.
-- **Per 90 Normalization via Event Mining**: Accurately deriving exact on-pitch minutes from match event actions and substitutions rather than defaulting to inaccurate static 90-minute assumptions.
+Relying exclusively on raw goal tallies introduces selection bias driven by team dominance, finishing streaks, or low shot volumes. This scouting pipeline isolates repeatable attacking value by evaluating:
+- **Expected Goals (xG) vs. Actual Goals**: Benchmarking high-volume generators against clinical finishers.
+- **Finishing Efficiency ($G - xG$)**: Pinpointing clinical overperformers versus strikers experiencing temporary negative variance.
+- **Per 90 Normalization via Event Parsing**: Calculating exact pitch time from match substitution events instead of imprecise static 90-minute assumptions.
 
 ---
 
 ## 🛠️ Data Pipeline & Methodology
 
-1. **Exact Playing Time Extraction (`src/player_minutes.py`)**:
-   - Parses match actions and substitution events (`type == 'Substitution'`) to track true pitch time for both starters and bench players.
-   - Saves a lightweight cache (`data/player_total_minutes.csv`) to decouple heavy minute calculation from visualization workflows.
+1. **Exact Playing Time Calculation (`src/player_minutes.py`)**:
+   - Parses player participation and substitution actions (`type == 'Substitution'`) to establish exact on-pitch minutes for starters and substitutes.
+   - Generates `data/player_total_minutes.csv` to serve as a fast local lookup table.
 2. **Scouting Summary Aggregation (`src/build_forward_summary.py`)**:
-   - Isolates center forward actions and aggregates total shots, goals, and cumulative xG.
-   - Exports an optimized summary dataset (`data/forward_scouting_summary.csv`), allowing downstream visualization scripts to execute instantly.
-3. **Scouting Thresholds (Sample Reliability)**:
+   - Filters event-level shot attempts for center forwards and aggregates goals, shots, and cumulative xG.
+   - Produces `data/forward_scouting_summary.csv`, allowing visualization scripts to run instantly without parsing massive event dumps.
+3. **Scouting Sample Thresholds**:
    - **Position**: `Center Forward`
-   - **Playing Time**: Minimum 1,200 minutes played to capture regular starters (including elite performers like Khadija Shaw).
-   - **Shot Volume**: Minimum 30 total shots or $xG \ge 0.1$ per 90.
-4. **Presentation-Grade Visual Standards**:
-   - Implements `adjustText` with automated pointer lines to eliminate overlapping labels.
-   - Uses padded plot boundaries (`set_xlim`, `set_ylim`) so corner quadrant annotations and bar chart value labels remain fully legible without clipping.
+   - **Sample Size**: Minimum 1,200 minutes played to capture regular starters (including high-impact forwards like Khadija Shaw).
+   - **Attacking Activity**: Minimum 30 total shots or $xG \ge 0.08$ per 90.
+4. **Data Visualization Design**:
+   - **Power / Square Root Scaling**: Applied to normalized per-90 metrics to declutter dense mid-range clusters while accommodating elite outliers.
+   - **Automated Label Placement**: Uses `adjustText` with directional pointers to prevent label overlapping.
+   - **Quadrant Benchmarking**: Segmented via sample averages across chance creation and conversion.
 
 ---
 
-## 📊 Key Visualizations & Findings
+## 📊 Key Visualizations & Scouting Insights
 
-### 1. Striker Quadrant Analysis ($xG \text{ per } 90 \text{ vs. } \text{Goals per } 90$)
+### 1. Normalized Quadrant Analysis ($xG \text{ per } 90 \text{ vs. } \text{Goals per } 90$)
 ![xG vs Goals per 90](results/xg_vs_goals_per90.png)
 
-- **The Outlier / Elite Volume**:
-  - **Khadija Monifa Shaw** stands out as the sample's most dominant attacker, creating elite shot quality per 90 while consistently outscoring expected output.
-  - **Lea Schüller** and **Sophia Olivia Wilson** rank among the highest volume creators, consistently generating quality opportunities against deep defensive blocks.
-- **Quadrant Archetypes**:
-  - Separates high-volume creators from clinical, lower-volume finishers and forwards navigating goal droughts.
+- **Generational Outlier**: **Khadija Monifa Shaw** dominates both dimensions (~0.78 xG/90 and >1.35 Goals/90), representing the highest threat density in the dataset.
+- **Elite Chance Generation**: **Sophia Olivia Wilson** and **Lea Schüller** consistently access high-quality scoring opportunities, anchoring top-tier attacking units.
+- **Clinical Finishers**: **Ana Marcos Moral**, **Elisabeth Terland**, and **Ewa Pajor** demonstrate above-average conversion rates relative to their expected metrics.
 
 ---
 
-### 2. Finishing Efficiency (Diverging Bar Chart: $G - xG$)
+### 2. Finishing Delta ($G - xG$)
 ![Finishing Efficiency](results/best_xg_performers.png)
 
-- **Clinical Overperformers ($G > xG$)**:
-  - **Khadija Monifa Shaw** leads the dataset (+8.74 goals above expectation), followed by **Ana Marcos Moral** (+4.50) and **Elisabeth Terland** (+4.32), showcasing elite conversion rates from low-to-medium difficulty chances.
-- **Market Opportunities / Underperformers ($G < xG$)**:
-  - **Alessia Russo** and **Valentina Giacinti** register negative finishing deltas despite generating consistent underlying shot volume.
-  - *Scouting Insight*: Often driven by variance or temporary finishing slumps. Strikers with sound underlying generation metrics represent undervalued transfer targets primed for positive regression to the mean.
+- **Top Overperformers**: **Khadija Monifa Shaw** (+8.74), **Ana Marcos Moral** (+4.50), and **Elisabeth Terland** (+4.32) lead the sample in converting difficult chances.
+- **Recruitment Targets / Value Plays**: Strikers with negative deltas like **Alessia Russo** (-2.47) and **Valentina Giacinti** (-2.54) maintain strong underlying chance involvement. In professional scouting, high underlying xG with depressed finishing delta often flags buy-low transfer opportunities due for positive mean regression.
+
+---
+
+### 3. Cumulative Season Output (Total xG vs. Goals)
+![Total xG vs Goals](results/xg_vs_goals.png)
+
+- Provides absolute volume context to verify that per-90 efficiency is sustained over substantial match samples.
+- Highlights sustained contributors such as **Cristina Martín-Prieto Gutierrez** and **Elisabeth Terland** reaching double-digit goal returns.
 
 ---
 
@@ -59,23 +63,23 @@ Traditional goal totals often misrepresent pure attacking ability due to team qu
 
 ```text
 ├── data/
-│   ├── clean_match_events_lean.csv    # Filtered match events (local raw data)
-│   ├── forward_scouting_summary.csv   # Aggregated forward statistics
-│   ├── match_events.csv               # Raw StatsBomb event dump
+│   ├── clean_match_events_lean.csv    # Filtered match events
+│   ├── forward_scouting_summary.csv   # Aggregated center forward metrics
+│   ├── match_events.csv               # Raw event dump
 │   ├── matches_data.csv               # Match metadata
 │   └── player_total_minutes.csv       # Pre-computed playing time cache
 ├── results/
-│   ├── best_xg_performers.png         # Diverging bar chart (Finishing efficiency G - xG)
-│   ├── xg_vs_goals_per90.png          # Normalized per-90 quadrant scatter plot
+│   ├── best_xg_performers.png         # Finishing efficiency bar chart (G - xG)
+│   ├── xg_vs_goals_per90.png          # Power-scaled per-90 quadrant scatter plot
 │   └── xg_vs_goals.png                # Total volume quadrant scatter plot
 ├── src/
 │   ├── best_xG_performers.py          # Script generating G - xG bar chart
-│   ├── build_forward_summary.py       # Script creating aggregated forward dataset
+│   ├── build_forward_summary.py       # Aggregation pipeline script
 │   ├── calculate_minutes.py           # Playing time extraction runner
-│   ├── datadownload.py                # Dataset download utility
+│   ├── datadownload.py                # Raw data ingestion utility
 │   ├── dataprocessingagent.py         # Data processing helper
 │   ├── goals_vs_xG_per90.py           # Script generating per-90 scatter plot
 │   ├── goals_vs_xG.py                 # Script generating total volume scatter plot
-│   └── player_minutes.py              # Playing time computation module
-├── .gitignore                         # Git ignore configuration
-└── README.md                          # Project documentation
+│   └── player_minutes.py              # Minute calculation module
+├── .gitignore
+└── README.md
