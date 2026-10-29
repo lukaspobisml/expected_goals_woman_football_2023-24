@@ -1,0 +1,19 @@
+# Python cache a dočasné súbory
+__pycache__/
+*.py[cod]
+*$py.class
+dataprocessingagent.py
+_temp_clean_task.py
+_run_pipeline.py
+.env
+
+# Veľké dátové súbory (GitHub má limit 100 MB na súbor)
+match_events.csv
+matches_data.csv
+clean_match_events_lean.csv
+euro_2024_events.parquet
+
+# Virtuálne prostredie
+venv/
+.venv/
+env/
