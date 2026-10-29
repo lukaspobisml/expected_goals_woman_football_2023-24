@@ -8,14 +8,14 @@ try:
 except ImportError:
     HAS_ADJUST_TEXT = False
 
-# Load aggregated scouting data
-df = pd.read_csv('forward_scouting_summary.csv')
+# Load aggregated scouting data from data/
+df = pd.read_csv('data/forward_scouting_summary.csv')
 
 # Calculate per 90 metrics
 df['xg_per_90'] = (df['total_xg'] / df['exact_minutes']) * 90
 df['goals_per_90'] = (df['total_goals'] / df['exact_minutes']) * 90
 
-# Filter by minutes (1200 allows elite starters like Khadija Shaw) and shot rate
+# Filter by minutes and shot rate
 MIN_MINUTES = 1200
 filtered_df = df[
     (df['exact_minutes'] >= MIN_MINUTES) & 
@@ -39,8 +39,8 @@ scatter = ax.scatter(
     linewidth=1.5
 )
 
-ax.axvline(mean_xg, color='gray', linewidth=1.2, linestyle='--')
-ax.axhline(mean_goals, color='gray', linewidth=1.2, linestyle='--')
+ax.axvline(mean_xg, color='gray', linewidth=1.2, linestyle='--', label='Average xG')
+ax.axhline(mean_goals, color='gray', linewidth=1.2, linestyle='--', label='Average Goals')
 
 # Selective label placement
 texts = []
@@ -69,64 +69,29 @@ if HAS_ADJUST_TEXT and texts:
         force_text=(0.5, 0.8)
     )
 
-# Padding borders so corner labels don't collide with data points
+# Padding borders so labels don't collide with corner boxes
 ax.set_xlim(0.05, filtered_df['xg_per_90'].max() + 0.08)
 ax.set_ylim(-0.02, filtered_df['goals_per_90'].max() + 0.12)
 
-# Quadrant descriptions positioned safely in the corners
 bbox_props = dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor='#cccccc', alpha=0.75)
 
-ax.text(
-    0.98, 0.98, 
-    'High xG per 90, Many Goals per 90\n(Reliable Finishing / Stars)', 
-    transform=ax.transAxes, 
-    fontsize=8.5, 
-    fontstyle='italic', 
-    ha='right', 
-    va='top', 
-    bbox=bbox_props
-)
-ax.text(
-    0.02, 0.98, 
-    'Low xG per 90, Many Goals per 90\n(Clinical / Overperforming)', 
-    transform=ax.transAxes, 
-    fontsize=8.5, 
-    fontstyle='italic', 
-    ha='left', 
-    va='top', 
-    bbox=bbox_props
-)
-ax.text(
-    0.02, 0.02, 
-    'Low xG per 90, Low Goals per 90\n(Attacking Crisis / Low Output)', 
-    transform=ax.transAxes, 
-    fontsize=8.5, 
-    fontstyle='italic', 
-    ha='left', 
-    va='bottom', 
-    bbox=bbox_props
-)
-ax.text(
-    0.98, 0.02, 
-    'High xG per 90, Low Goals per 90\n(Underperforming / Bad Luck)', 
-    transform=ax.transAxes, 
-    fontsize=8.5, 
-    fontstyle='italic', 
-    ha='right', 
-    va='bottom', 
-    bbox=bbox_props
-)
+ax.text(0.98, 0.98, 'High xG per 90, Many Goals per 90\n(Reliable Finishing / Stars)', 
+        transform=ax.transAxes, fontsize=8.5, fontstyle='italic', ha='right', va='top', bbox=bbox_props)
+ax.text(0.02, 0.98, 'Low xG per 90, Many Goals per 90\n(Clinical / Overperforming)', 
+        transform=ax.transAxes, fontsize=8.5, fontstyle='italic', ha='left', va='top', bbox=bbox_props)
+ax.text(0.02, 0.02, 'Low xG per 90, Low Goals per 90\n(Attacking Crisis / Low Output)', 
+        transform=ax.transAxes, fontsize=8.5, fontstyle='italic', ha='left', va='bottom', bbox=bbox_props)
+ax.text(0.98, 0.02, 'High xG per 90, Low Goals per 90\n(Underperforming / Bad Luck)', 
+        transform=ax.transAxes, fontsize=8.5, fontstyle='italic', ha='right', va='bottom', bbox=bbox_props)
 
 ax.set_title(
     f'Player xG vs. Real Goals per 90 (Normalized)\nFiltered by min. {MIN_MINUTES} Minutes & Active Offense | Center Forwards Only',
-    fontsize=14, 
-    fontweight='bold', 
-    pad=15
+    fontsize=14, fontweight='bold', pad=15
 )
 ax.set_xlabel('xG per 90 minutes', fontsize=11, fontweight='bold')
 ax.set_ylabel('Goals per 90 minutes', fontsize=11, fontweight='bold')
 ax.legend(loc='upper left', frameon=True, facecolor='white', edgecolor='none')
 
 plt.tight_layout()
-plt.savefig('xg_vs_goals_per90.png', dpi=300, facecolor=fig.get_facecolor(), edgecolor='none')
+plt.savefig('results/xg_vs_goals_per90.png', dpi=300, facecolor=fig.get_facecolor(), edgecolor='none')
 plt.show()
