@@ -24,7 +24,7 @@ Relying exclusively on raw goal tallies introduces selection bias driven by team
 3. **Scouting Sample Thresholds**:
    - **Position**: `Center Forward`
    - **Sample Size**: Minimum 1,200 minutes played to capture regular starters (including high-impact forwards like Khadija Shaw).
-   - **Attacking Activity**: Minimum 30 total shots or $xG \ge 0.08$ per 90.
+   - **Attacking Activity**: Minimum 30 total shots or $xG \ge 0.1$ per 90.
 4. **Data Visualization Design**:
    - **Power / Square Root Scaling**: Applied to normalized per-90 metrics to declutter dense mid-range clusters while accommodating elite outliers.
    - **Automated Label Placement**: Uses `adjustText` with directional pointers to prevent label overlapping.

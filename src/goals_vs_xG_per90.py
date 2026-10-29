@@ -19,7 +19,7 @@ df['goals_per_90'] = (df['total_goals'] / df['exact_minutes']) * 90
 MIN_MINUTES = 1200
 filtered_df = df[
     (df['exact_minutes'] >= MIN_MINUTES) & 
-    (df['xg_per_90'] >= 0.08)
+    (df['xg_per_90'] >= 0.1)
 ].copy()
 
 mean_xg = filtered_df['xg_per_90'].mean()
